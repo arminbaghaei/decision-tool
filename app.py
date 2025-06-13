@@ -52,20 +52,20 @@ swot_criteria = {
     ]
 }
 
-# List of materials
+# Materials list
 materials = ["Wood", "Hemp", "Rammed Earth", "Straw Bale"]
 
 # App title
-st.title("Zero-Carbon Material Selection Tool for NZ Construction Industry")
+st.title("Zero-Carbon Material Selection Tool (SWOT-Based)")
 
-# Material selector
+# Select material
 selected_material = st.selectbox("Select Material:", materials)
 
-# Score tracking
+# Score tracker
 total_score = 0
 score_table = []
 
-# Input loop: scores per SWOT item under each factor
+# Collect SWOT-based ratings
 for factor, weight in factors.items():
     st.subheader(factor)
     factor_score = 0
@@ -85,34 +85,33 @@ for factor, weight in factors.items():
             "Weight": weight
         })
     
-    # Calculate weighted contribution per factor
-    average_factor_score = factor_score / len(swot_criteria[factor])
-    weighted_factor_score = average_factor_score * weight / 7
-    total_score += weighted_factor_score
+    avg_score = factor_score / len(swot_criteria[factor])
+    weighted_score = avg_score * weight / 7
+    total_score += weighted_score
 
-# Show total score
+# Show final score
 st.markdown(f"## Final Weighted Score for {selected_material}: {total_score:.2f}")
 
-# Optional: Display score table
+# Show detailed table
 if st.checkbox("Show Detailed SWOT Score Table"):
     df = pd.DataFrame(score_table)
     df["Weighted Contribution"] = df["Score"] * df["Weight"] / 7
     st.dataframe(df)
 
-# Optional: Radar Chart
+# Show radar chart
 if score_table and st.checkbox("Show Radar Chart of Factor Scores"):
     radar_scores = []
     factor_labels = []
 
     for factor in factors:
         scores = [entry["Score"] for entry in score_table if entry["Factor"] == factor]
-        avg_score = sum(scores) / len(scores)
-        normalized = avg_score * 100 / 7  # scale to 0–100
-        radar_scores.append(normalized)
+        avg = sum(scores) / len(scores)
+        norm = avg * 100 / 7
+        radar_scores.append(norm)
         factor_labels.append(factor)
 
-    radar_scores.append(radar_scores[0])     # loop closure
-    factor_labels.append(factor_labels[0])   # loop closure
+    radar_scores.append(radar_scores[0])
+    factor_labels.append(factor_labels[0])
 
     fig = go.Figure(data=go.Scatterpolar(
         r=radar_scores,
@@ -126,3 +125,30 @@ if score_table and st.checkbox("Show Radar Chart of Factor Scores"):
         title=f"Performance Radar Chart for {selected_material}"
     )
     st.plotly_chart(fig)
+
+# Show interpretation
+st.markdown("### Interpretation of Results")
+if total_score > 85:
+    st.success("Excellent performance! This material is highly suitable for zero-carbon construction.")
+elif total_score > 65:
+    st.info("Good performance. This material balances strengths across key sustainability criteria.")
+elif total_score > 45:
+    st.warning("Moderate suitability. Some factors may require trade-offs or mitigation strategies.")
+else:
+    st.error("Low suitability. Consider alternative materials or reassess your SWOT inputs.")
+
+# Show bar chart
+if st.checkbox("Show Bar Chart of Factor-Level Scores"):
+    factor_bar_scores = []
+    for factor in factors:
+        scores = [entry["Score"] for entry in score_table if entry["Factor"] == factor]
+        avg_score = sum(scores) / len(scores)
+        normalized = avg_score * 100 / 7
+        factor_bar_scores.append(round(normalized, 2))
+
+    chart_df = pd.DataFrame({
+        "Factor": list(factors.keys()),
+        "Score (%)": factor_bar_scores
+    }).set_index("Factor")
+
+    st.bar_chart(chart_df)
