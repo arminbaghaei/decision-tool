@@ -1,8 +1,7 @@
-
 import streamlit as st
 import pandas as pd
 
-# Define the factors and their weights
+# Factors and their weights
 factors = {
     "Durability": 19.13,
     "Cost Effectiveness": 19.29,
@@ -12,31 +11,89 @@ factors = {
     "Aesthetics": 13.66
 }
 
-# Define the materials and placeholder SWOT scores for each factor (user will input these)
+# SWOT parameters per factor
+swot_criteria = {
+    "Durability": [
+        "UV/moisture resistance",
+        "Service life",
+        "Maintenance frequency",
+        "Resilience under weather"
+    ],
+    "Cost Effectiveness": [
+        "Maintenance savings",
+        "Upfront cost",
+        "Financial incentives",
+        "Price volatility"
+    ],
+    "Buildability": [
+        "Ease of handling",
+        "Tools required",
+        "Training available",
+        "Retrofit compatibility"
+    ],
+    "Embodied Carbon": [
+        "Low impact manufacturing",
+        "Supply chain emissions",
+        "Carbon certification",
+        "Greenwashing risk"
+    ],
+    "Availability": [
+        "Local supply chains",
+        "Transport costs",
+        "Production scalability",
+        "Material scarcity"
+    ],
+    "Aesthetics": [
+        "Visual appeal",
+        "Finish options",
+        "Design adaptability",
+        "Style bias"
+    ]
+}
+
+# List of materials
 materials = ["Wood", "Hemp", "Rammed Earth", "Straw Bale"]
 
-st.title("Zero-Carbon Building Material Decision Tool")
-st.markdown("### Evaluate materials based on six weighted factors.")
+# App title
+st.title("Zero-Carbon Material Selection Tool (SWOT-Based)")
 
-selected_material = st.selectbox("Choose a material to evaluate:", materials)
+# Material selector
+selected_material = st.selectbox("Select Material:", materials)
 
-scores = {}
-st.markdown("#### Enter scores (1 to 5) for each factor:")
+# Score tracking
+total_score = 0
+score_table = []
 
-for factor in factors:
-    scores[factor] = st.slider(factor, 1, 5, 3)
+# Score input for each factor and SWOT parameter
+for factor, weight in factors.items():
+    st.subheader(f"{factor} (Weight: {weight})")
+    factor_score = 0
+    col1, col2 = st.columns([3, 1])
+    with col1:
+        st.markdown("**SWOT Parameters**")
+    with col2:
+        st.markdown("**Score (1–7)**")
+    
+    for criterion in swot_criteria[factor]:
+        score = st.slider(f"{factor} – {criterion}", 1, 7, 4, key=f"{selected_material}_{factor}_{criterion}")
+        factor_score += score
+        score_table.append({
+            "Factor": factor,
+            "SWOT Item": criterion,
+            "Score": score,
+            "Weight": weight
+        })
+    
+    # Normalize factor score (average), then apply weight
+    average_factor_score = factor_score / len(swot_criteria[factor])
+    weighted_factor_score = average_factor_score * weight / 7
+    total_score += weighted_factor_score
 
-# Calculate final weighted score
-weighted_score = sum(scores[factor] * weight for factor, weight in factors.items()) / 100
+# Display final result
+st.markdown(f"## Final Weighted Score for {selected_material}: {total_score:.2f}")
 
-st.markdown(f"### Final Weighted Score for {selected_material}: {weighted_score:.2f}")
-
-# Optionally display a table of scores
-if st.checkbox("Show Score Breakdown"):
-    score_df = pd.DataFrame({
-        "Factor": list(factors.keys()),
-        "Weight": list(factors.values()),
-        "User Score": [scores[f] for f in factors],
-        "Weighted Score": [scores[f] * factors[f] / 100 for f in factors]
-    })
-    st.dataframe(score_df)
+# Optional: Show detailed score table
+if st.checkbox("Show Detailed SWOT Score Table"):
+    df = pd.DataFrame(score_table)
+    df["Weighted Contribution"] = df["Score"] * df["Weight"] / 7
+    st.dataframe(df)
