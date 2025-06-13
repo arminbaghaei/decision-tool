@@ -75,7 +75,7 @@ for factor, weight in factors.items():
         st.markdown("**Score (1–7)**")
     
     for criterion in swot_criteria[factor]:
-        score = st.slider(f"{factor} – {criterion}", 1, 7, 4, key=f"{selected_material}_{factor}_{criterion}")
+        score = st.slider(f"{criterion}", 1, 7, 4, key=f"{selected_material}_{factor}_{criterion}")
         factor_score += score
         score_table.append({
             "Factor": factor,
