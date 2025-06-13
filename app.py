@@ -66,7 +66,7 @@ score_table = []
 
 # Score input for each factor and SWOT parameter
 for factor, weight in factors.items():
-    st.subheader(f"{factor} (Weight: {weight})")
+    st.subheader(factor)  # Removed the "Weight: ..." label
     factor_score = 0
     col1, col2 = st.columns([3, 1])
     with col1:
