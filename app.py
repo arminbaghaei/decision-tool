@@ -12,8 +12,8 @@ factors = {
     "Aesthetics": 13.66
 }
 
-# SWOT parameters per factor
-swot_criteria = {
+# Assessment items per factor
+criteria = {
     "Durability": [
         "UV/moisture resistance",
         "Service life",
@@ -56,7 +56,7 @@ swot_criteria = {
 materials = ["Wood", "Hemp", "Rammed Earth", "Straw Bale"]
 
 # App title
-st.title("Zero-Carbon Material Selection Tool (SWOT-Based)")
+st.title("Zero-Carbon Material Selection Tool")
 
 # Select material
 selected_material = st.selectbox("Select Material:", materials)
@@ -65,41 +65,41 @@ selected_material = st.selectbox("Select Material:", materials)
 total_score = 0
 score_table = []
 
-# Collect SWOT-based ratings
+# Collect user input for each assessment item
 for factor, weight in factors.items():
     st.subheader(factor)
     factor_score = 0
     col1, col2 = st.columns([3, 1])
     with col1:
-        st.markdown("**SWOT Parameters**")
+        st.markdown("**Evaluation Items**")
     with col2:
         st.markdown("**Score (1–7)**")
     
-    for criterion in swot_criteria[factor]:
-        score = st.slider(f"{criterion}", 1, 7, 1, key=f"{selected_material}_{factor}_{criterion}")
+    for item in criteria[factor]:
+        score = st.slider(f"{item}", 1, 7, 1, key=f"{selected_material}_{factor}_{item}")
         factor_score += score
         score_table.append({
             "Factor": factor,
-            "SWOT Item": criterion,
+            "Item": item,
             "Score": score,
             "Weight": weight
         })
     
-    avg_score = factor_score / len(swot_criteria[factor])
+    avg_score = factor_score / len(criteria[factor])
     weighted_score = avg_score * weight / 7
     total_score += weighted_score
 
 # Show final score
 st.markdown(f"## Final Weighted Score for {selected_material}: {total_score:.2f}")
 
-# Show detailed table
-if st.checkbox("Show Detailed SWOT Score Table"):
+# Show detailed score table
+if st.checkbox("Show Detailed Score Table"):
     df = pd.DataFrame(score_table)
     df["Weighted Contribution"] = df["Score"] * df["Weight"] / 7
     st.dataframe(df)
 
 # Show radar chart
-if score_table and st.checkbox("Show Radar Chart of Factor Scores"):
+if score_table and st.checkbox("Show Radar Chart of Category Scores"):
     radar_scores = []
     factor_labels = []
 
@@ -133,12 +133,12 @@ if total_score > 85:
 elif total_score > 65:
     st.info("Good performance. This material balances strengths across key sustainability criteria.")
 elif total_score > 45:
-    st.warning("Moderate suitability. Some factors may require trade-offs or mitigation strategies.")
+    st.warning("Moderate suitability. Some categories may require trade-offs or improvement.")
 else:
-    st.error("Low suitability. Consider alternative materials or reassess your SWOT inputs.")
+    st.error("Low suitability. Consider alternative materials or review your scoring.")
 
 # Show bar chart
-if st.checkbox("Show Bar Chart of Factor-Level Scores"):
+if st.checkbox("Show Bar Chart of Category Scores"):
     factor_bar_scores = []
     for factor in factors:
         scores = [entry["Score"] for entry in score_table if entry["Factor"] == factor]
@@ -147,8 +147,8 @@ if st.checkbox("Show Bar Chart of Factor-Level Scores"):
         factor_bar_scores.append(round(normalized, 2))
 
     chart_df = pd.DataFrame({
-        "Factor": list(factors.keys()),
+        "Category": list(factors.keys()),
         "Score (%)": factor_bar_scores
-    }).set_index("Factor")
+    }).set_index("Category")
 
     st.bar_chart(chart_df)
