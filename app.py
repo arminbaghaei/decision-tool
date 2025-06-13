@@ -56,7 +56,7 @@ swot_criteria = {
 materials = ["Wood", "Hemp", "Rammed Earth", "Straw Bale"]
 
 # App title
-st.title("Zero-Carbon Material Selection Tool (SWOT-Based)")
+st.title("Zero-Carbon Material Selection Tool for NZ Construction Industry")
 
 # Material selector
 selected_material = st.selectbox("Select Material:", materials)
