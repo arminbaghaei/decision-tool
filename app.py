@@ -38,8 +38,28 @@ criteria = {
     }
 }
 
+# NZ-based cost defaults per material
+nz_prices = {
+    "Wood": {
+        "Maintenance cost (NZD/sqm)": "$60+",
+        "Upfront material cost (NZD/sqm)": "$100-$150"
+    },
+    "Hemp": {
+        "Maintenance cost (NZD/sqm)": "$40-$60",
+        "Upfront material cost (NZD/sqm)": "$70-$100"
+    },
+    "Rammed Earth": {
+        "Maintenance cost (NZD/sqm)": "$30-$40",
+        "Upfront material cost (NZD/sqm)": "$40-$70"
+    },
+    "Straw Bale": {
+        "Maintenance cost (NZD/sqm)": "$20-$30",
+        "Upfront material cost (NZD/sqm)": "Less than $40"
+    }
+}
+
 # Material options
-materials = ["Wood", "Hemp", "Rammed Earth", "Straw Bale"]
+materials = list(nz_prices.keys())
 selected_material = st.selectbox("Select Material", materials)
 
 # Track score and details
@@ -51,7 +71,13 @@ for factor, weight in factors.items():
     if factor in criteria:
         st.subheader(factor)
         for item, options in criteria[factor].items():
-            selected_option = st.selectbox(f"{item}", options, key=f"{factor}_{item}")
+            # Apply material-specific defaults for cost items
+            if item in nz_prices[selected_material]:
+                default_value = nz_prices[selected_material][item]
+                default_index = options.index(default_value)
+                selected_option = st.selectbox(f"{item}", options, index=default_index, key=f"{factor}_{item}")
+            else:
+                selected_option = st.selectbox(f"{item}", options, key=f"{factor}_{item}")
             score = options.index(selected_option) + 1  # 1 to 5
             weighted = score * weight / 5  # normalize to 5-point scale
             score_table.append({
