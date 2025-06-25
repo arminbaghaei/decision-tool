@@ -11,7 +11,7 @@ factors = {
     "Aesthetics": 13.66
 }
 
-# Updated evaluation criteria and standard options
+# Full criteria with NZ-specific + original values
 criteria = {
     "Durability": {
         "Weather resistance": ["Poor", "Fair", "Good", "Very Good", "Excellent"],
@@ -35,6 +35,18 @@ criteria = {
         "End-of-life: Recycle": ["Never", "Rarely", "Sometimes", "Often", "Always"],
         "End-of-life: Reuse": ["Never", "Rarely", "Sometimes", "Often", "Always"],
         "End-of-life: Recovery": ["Never", "Rarely", "Sometimes", "Often", "Always"]
+    },
+    "Availability": {
+        "Local supply chains": ["None", "Limited", "Moderate", "Strong", "Very Strong"],
+        "Transport costs": ["Very High", "High", "Moderate", "Low", "Very Low"],
+        "Production scalability": ["None", "Low", "Moderate", "High", "Very High"],
+        "Material scarcity": ["Very Rare", "Rare", "Moderate", "Common", "Very Common"]
+    },
+    "Aesthetics": {
+        "Visual appeal": ["Very Poor", "Poor", "Moderate", "Attractive", "Excellent"],
+        "Finish options": ["Very Limited", "Limited", "Moderate", "Varied", "Extensive"],
+        "Design adaptability": ["Very Rigid", "Rigid", "Moderate", "Flexible", "Very Flexible"],
+        "Style bias": ["Highly Biased", "Biased", "Neutral", "Adaptive", "Universal"]
     }
 }
 
@@ -71,7 +83,6 @@ for factor, weight in factors.items():
     if factor in criteria:
         st.subheader(factor)
         for item, options in criteria[factor].items():
-            # Apply material-specific defaults for cost items
             if item in nz_prices[selected_material]:
                 default_value = nz_prices[selected_material][item]
                 default_index = options.index(default_value)
