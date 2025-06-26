@@ -11,7 +11,7 @@ factors = {
     "Aesthetics": 13.66
 }
 
-# Full criteria with NZ-specific + updated percentage values for weather/UV
+# Full criteria with NZ-specific + updated percentage and carbon units
 criteria = {
     "Durability": {
         "Weather resistance": ["10%", "20%", "30%", "40%", "50%"],
@@ -31,7 +31,13 @@ criteria = {
         "Compatibility with materials": ["1 material", "2 materials", "3 materials", "4 materials", "5+ materials"]
     },
     "Embodied Carbon": {
-        "Production (cradle to gate)": ["Very High", "High", "Moderate", "Low", "Very Low"],
+        "Production (cradle to gate) [kg CO₂-eq/m²]": [
+            "Very High (>100)", 
+            "High (75–100)", 
+            "Moderate (50–75)", 
+            "Low (25–50)", 
+            "Very Low (<25)"
+        ],
         "End-of-life: Recycle": ["Never", "Rarely", "Sometimes", "Often", "Always"],
         "End-of-life: Reuse": ["Never", "Rarely", "Sometimes", "Often", "Always"],
         "End-of-life: Recovery": ["Never", "Rarely", "Sometimes", "Often", "Always"]
