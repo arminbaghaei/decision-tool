@@ -11,11 +11,11 @@ factors = {
     "Aesthetics": 13.66
 }
 
-# Full criteria with NZ-specific + original values
+# Full criteria with NZ-specific + updated percentage values for weather/UV
 criteria = {
     "Durability": {
-        "Weather resistance": ["Poor", "Fair", "Good", "Very Good", "Excellent"],
-        "UV resistance": ["Poor", "Fair", "Good", "Very Good", "Excellent"],
+        "Weather resistance": ["10%", "20%", "30%", "40%", "50%"],
+        "UV resistance": ["10%", "20%", "30%", "40%", "50%"],
         "Service life": ["20 years", "30 years", "50 years", "100 years", "Over 100 years"],
         "Maintenance frequency": ["Every 10 yrs", "Every 20 yrs", "Every 30 yrs", "Every 50 yrs", "Over 50 yrs"]
     },
@@ -90,7 +90,7 @@ for factor, weight in factors.items():
             else:
                 selected_option = st.selectbox(f"{item}", options, key=f"{factor}_{item}")
             score = options.index(selected_option) + 1  # 1 to 5
-            weighted = score * weight / 5  # normalize to 5-point scale
+            weighted = score * weight / 5
             score_table.append({
                 "Factor": factor,
                 "Item": item,
