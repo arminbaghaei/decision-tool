@@ -1,7 +1,24 @@
 import streamlit as st
 import pandas as pd
 
-# Weights for each factor
+# -------------------------------------------
+# 🔹 Introduction Section
+# -------------------------------------------
+st.title("🏗️ Zero-Carbon Material Evaluation Tool")
+
+st.markdown("""
+In the pursuit of low-emission, sustainable buildings, selecting the most appropriate construction materials is a complex yet critical task. This decision-making tool assists users—such as architects, engineers, researchers, and policymakers—in evaluating and comparing zero-carbon building materials based on a comprehensive set of performance factors.
+
+The tool applies a multi-criteria decision-making (MCDM) framework that incorporates six weighted categories: **Durability**, **Cost Effectiveness**, **Buildability**, **Embodied Carbon**, **Availability**, and **Aesthetics**. Each category contains detailed, context-specific evaluation items drawn from literature and industry standards, including lifecycle carbon impact, local supply chain considerations, and qualitative usability features.
+
+Users select a material and assign scores based on predefined descriptors, ranging from quantitative metrics (e.g., embodied carbon in kg CO₂-eq/m², cost per square meter) to qualitative indicators (e.g., weather resistance, ease of handling). Final scores are automatically weighted and aggregated to support transparent and evidence-based decision-making.
+
+This tool is designed with New Zealand's construction context in mind but can be adapted for broader international use.
+""")
+
+# -------------------------------------------
+# 🔹 Factor Weights
+# -------------------------------------------
 factors = {
     "Durability": 19.13,
     "Cost Effectiveness": 19.29,
@@ -11,7 +28,9 @@ factors = {
     "Aesthetics": 13.66
 }
 
-# Full criteria with NZ-specific + updated percentage and carbon units
+# -------------------------------------------
+# 🔹 Evaluation Criteria per Factor
+# -------------------------------------------
 criteria = {
     "Durability": {
         "Weather resistance": ["10%", "20%", "30%", "40%", "50%"],
@@ -56,7 +75,9 @@ criteria = {
     }
 }
 
-# NZ-based cost defaults per material
+# -------------------------------------------
+# 🔹 Material Defaults for Cost
+# -------------------------------------------
 nz_prices = {
     "Wood": {
         "Maintenance cost (NZD/sqm)": "$60+",
@@ -76,15 +97,15 @@ nz_prices = {
     }
 }
 
-# Material options
+# -------------------------------------------
+# 🔹 Material Selection & Scoring
+# -------------------------------------------
 materials = list(nz_prices.keys())
 selected_material = st.selectbox("Select Material", materials)
 
-# Track score and details
 score_table = []
 total_score = 0
 
-# Collect user input and calculate weighted score
 for factor, weight in factors.items():
     if factor in criteria:
         st.subheader(factor)
@@ -95,7 +116,7 @@ for factor, weight in factors.items():
                 selected_option = st.selectbox(f"{item}", options, index=default_index, key=f"{factor}_{item}")
             else:
                 selected_option = st.selectbox(f"{item}", options, key=f"{factor}_{item}")
-            score = options.index(selected_option) + 1  # 1 to 5
+            score = options.index(selected_option) + 1
             weighted = score * weight / 5
             score_table.append({
                 "Factor": factor,
@@ -107,10 +128,11 @@ for factor, weight in factors.items():
             })
             total_score += weighted
 
-# Display final result
+# -------------------------------------------
+# 🔹 Final Result Display
+# -------------------------------------------
 st.markdown(f"### ✅ Final Weighted Score for **{selected_material}**: **{total_score:.2f}**")
 
-# Optional detailed table
 if st.checkbox("Show Detailed Score Table"):
     df = pd.DataFrame(score_table)
     st.dataframe(df)
